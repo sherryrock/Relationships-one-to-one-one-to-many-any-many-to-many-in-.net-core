@@ -1,0 +1,54 @@
+using Microsoft.EntityFrameworkCore;
+using Relationships.Models;
+
+namespace Relationships.Data
+{
+    public class DContext : DbContext
+    {
+        public DContext(DbContextOptions<DContext> options) : base(options)
+        {
+
+        }
+  
+        public DbSet<Person> Persons { get; set; }
+        public DbSet<Address> Addresses { get; set; }
+        public DbSet<Project> Projects { get; set; }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+          
+
+
+
+            //Person , address and project relationship:
+
+            // One-to-One relationship configuration
+            modelBuilder.Entity<Person>()
+                .HasOne(p => p.Address)
+                .WithOne(a => a.Person)
+                .HasForeignKey<Address>(a => a.PersonId);
+
+            // One-to-Many relationship configuration
+            modelBuilder.Entity<Project>()
+                .HasOne(pr => pr.Person)         // Navigation property in Project class
+                .WithMany(p => p.Projects)        // Navigation property in Person class
+                .HasForeignKey(pr => pr.PersonId) // Foreign key in Project class
+                .IsRequired();                    // Add this line if PersonId is a required foreign key in the Project entity.
+
+            // One-to-Many relationship configuration
+            modelBuilder.Entity<Project>()
+                .HasOne(pr => pr.Person)         // Navigation property in Project class
+                .WithMany(p => p.Projects)        // Navigation property in Person class
+                .HasForeignKey(pr => pr.PersonId) // Foreign key in Project class
+                .IsRequired();
+
+
+
+        }
+
+
+
+    }
+
+}
+
+
